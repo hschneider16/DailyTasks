@@ -20,7 +20,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -31,10 +34,8 @@ fun HelpScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .padding(top = 8.dp)
     ) {
-        HelpTopBar(
-            onBackClick = onBackClick
-        )
 
         Column(
             modifier = Modifier
@@ -65,50 +66,22 @@ fun HelpScreen(
 }
 
 @Composable
-private fun HelpTopBar(
-    onBackClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(horizontal = 4.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(
-            onClick = onBackClick
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Go back"
-            )
-        }
-
-        Text(
-            text = "Help",
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 48.dp),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
 private fun HelpSection(
     question: String,
     answer: String
 ) {
+
     Text(
-        text = buildString {
-            append(question)
+        // buildAnnotatedString used to make the question bold, and the answer not bold
+        text = buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append(question)
+            }
+
             append(": ")
             append(answer)
         },
-        modifier = Modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.bodyLarge,
-        fontWeight = FontWeight.Bold
+        modifier = Modifier.fillMaxWidth()
     )
 
     Spacer(modifier = Modifier.height(4.dp))
@@ -118,9 +91,9 @@ private fun HelpSection(
 private fun HelpDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(
-            horizontal = 6.dp,
-            vertical = 6.dp
+            horizontal = 12.dp,
+            vertical = 12.dp
         ),
-        color = MaterialTheme.colorScheme.outline
+        color = MaterialTheme.colorScheme.surfaceDim
     )
 }

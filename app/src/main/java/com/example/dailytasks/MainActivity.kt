@@ -31,7 +31,9 @@ class MainActivity : ComponentActivity() {
             DailyTasksTheme (
                 darkTheme = isDarkMode
             ) {
-                DailyTasksApp(viewModel = taskViewModel)
+                DailyTasksApp(
+                    viewModel = taskViewModel,
+                )
                 }
             }
         }

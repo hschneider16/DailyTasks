@@ -10,7 +10,7 @@ import java.time.LocalDate
 class TaskViewModel : ViewModel() {
 
     // Dark mode setting function
-    private val _isDarkMode = MutableStateFlow(false)
+    val _isDarkMode = MutableStateFlow(false)
     val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
 
     fun setDarkModeEnabled(enabled: Boolean) {

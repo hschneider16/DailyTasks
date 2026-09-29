@@ -172,3 +172,77 @@ fun TaskCard(
         }
     }
 }
+
+@Composable
+fun AddTaskDialog(
+    onDismiss: () -> Unit,
+    onSave: (
+        title: String,
+        description: String,
+        dueDate: LocalDate
+    ) -> Unit
+) {
+    var title by remember {
+        mutableStateOf("")
+    }
+
+    var description by remember {
+        mutableStateOf("")
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(stringResource(R.string.add_task))
+        },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(stringResource(R.string.title))
+                    },
+                    singleLine = true
+                )
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(stringResource(R.string.desc))
+                    },
+                    minLines = 3
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (title.isNotBlank()) {
+                        onSave(
+                            title.trim(),
+                            description.trim(),
+                            LocalDate.now()
+                        )
+                    }
+                }
+            ) {
+                Text(stringResource(R.string.save))
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = onDismiss
+            ) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
+}

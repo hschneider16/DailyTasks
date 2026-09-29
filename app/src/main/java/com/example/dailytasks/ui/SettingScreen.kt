@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.dailytasks.R
 
@@ -31,43 +34,21 @@ fun SettingsScreen(
     onBackClick: () -> Unit
 ) {
     // Setting menu UI
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.settings)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBackClick
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
             DarkModeSetting(
                 isDarkMode = isDarkMode,
                 onDarkModeChanged = onDarkModeChanged
             )
+            SettingDivider()
         }
     }
-}
 
 @Composable
-private fun DarkModeSetting(
+fun DarkModeSetting(
     isDarkMode: Boolean,
     onDarkModeChanged: (Boolean) -> Unit
 ) {
@@ -81,7 +62,8 @@ private fun DarkModeSetting(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = stringResource(R.string.darkmode)
+                text = stringResource(R.string.darkmode),
+                fontWeight = FontWeight.Bold
             )
 
             Text(
@@ -100,4 +82,15 @@ private fun DarkModeSetting(
             thumbContent = null
         )
     }
+}
+
+@Composable
+private fun SettingDivider() {
+    HorizontalDivider(
+        modifier = Modifier.padding(
+            horizontal = 12.dp,
+            vertical = 12.dp
+        ),
+        color = MaterialTheme.colorScheme.surfaceDim
+    )
 }
