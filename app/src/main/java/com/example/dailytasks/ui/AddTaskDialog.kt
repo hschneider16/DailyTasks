@@ -37,6 +37,10 @@ fun AddTaskDialog(
         mutableStateOf("")
     }
 
+    var dueDate by remember {
+        mutableStateOf(LocalDate.now())
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -44,6 +48,7 @@ fun AddTaskDialog(
         },
         text = {
             Column {
+                // Title field
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
@@ -57,7 +62,7 @@ fun AddTaskDialog(
                 Spacer(
                     modifier = Modifier.height(8.dp)
                 )
-
+                // Description field
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -67,8 +72,18 @@ fun AddTaskDialog(
                     },
                     minLines = 3
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                DueDateField(
+                    dueDate = dueDate,
+                    onDateSelected = {
+                        dueDate = it
+                    }
+                )
             }
         },
+        // Confirm task creation
         confirmButton = {
             Button(
                 onClick = {
@@ -84,6 +99,7 @@ fun AddTaskDialog(
                 Text(stringResource(R.string.save))
             }
         },
+        // Cancel task creation
         dismissButton = {
             Button(
                 onClick = onDismiss

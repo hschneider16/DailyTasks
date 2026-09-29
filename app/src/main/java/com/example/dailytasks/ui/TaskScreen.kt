@@ -1,5 +1,6 @@
 package com.example.dailytasks.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,12 +14,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -28,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,9 +73,11 @@ fun TaskList(
                 onMarkDoneClick = {
                     onMarkDoneClick(task.id)
                 },
+                // Edit task
                 onEditClick = {
                     onEditClick(task)
                 },
+                // Delete task
                 onDeleteClick = {
                     onDeleteClick(task)
                 }
@@ -81,6 +87,7 @@ fun TaskList(
 }
 
 @Composable
+// UI element for what each task on the list should look like
 fun TaskCard(
     task: Task,
     onTaskClick: () -> Unit,
@@ -88,6 +95,15 @@ fun TaskCard(
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
+    val isOverdue =
+        !task.complete && LocalDate.now().isAfter(task.dueDate)
+
+    val dueDateColor =
+        if (isOverdue) {
+            MaterialTheme.colorScheme.error
+        } else {
+            MaterialTheme.colorScheme.outlineVariant
+        }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -107,34 +123,43 @@ fun TaskCard(
             )
             // Task due date
             Text(
-                text = "Due: ${task.dueDate.format(DateTimeFormatter.ISO_LOCAL_DATE)}",
+                // Checks if the task is overdue and makes it red to draw attention!
+                text = if (isOverdue) {
+                    "Overdue: ${task.dueDate.format(
+                        DateTimeFormatter.ofPattern("MMM d, yyyy")
+                    )}"
+                } else {
+                    "Due: ${task.dueDate.format(
+                        DateTimeFormatter.ofPattern("MMM d, yyyy")
+                    )}"
+                },
                 style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold
+                color = dueDateColor
             )
         }
 
         Spacer(modifier = Modifier.height(6.dp))
         // Description text
-        Text(
-            text = task.description,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onTaskClick),
-            maxLines = if (task.isExpanded) Int.MAX_VALUE else 2,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.bodyMedium
-        )
-// Function to cut off long text when not expanded
-        if (!task.isExpanded && task.description.length > 90) {
             Text(
-                text = stringResource(R.string.more),
+                text = task.description,
                 modifier = Modifier
-                    .clickable(onClick = onTaskClick)
-                    .padding(top = 2.dp),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelMedium
+                    .fillMaxWidth()
+                    .clickable(onClick = onTaskClick),
+                maxLines = if (task.isExpanded) Int.MAX_VALUE else 2,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyMedium
             )
-        }
+// Function to cut off long text when not expanded
+            if (!task.isExpanded && task.description.length > 90) {
+                Text(
+                    text = stringResource(R.string.more),
+                    modifier = Modifier
+                        .clickable(onClick = onTaskClick)
+                        .padding(top = 2.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -188,4 +213,23 @@ fun TaskCard(
             }
         }
     }
+}
+
+@Composable
+// Button for adding a task in the bottom right corner of the screen
+fun AddTaskButton(
+    onClick: () -> Unit
+) {
+    ExtendedFloatingActionButton(
+        onClick = onClick,
+        icon = {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null
+            )
+        },
+        text = {
+            Text(stringResource(R.string.add_task))
+        }
+    )
 }

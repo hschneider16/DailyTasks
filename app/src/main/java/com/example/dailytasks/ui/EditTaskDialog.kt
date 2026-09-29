@@ -1,6 +1,8 @@
 package com.example.dailytasks.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -10,7 +12,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.example.dailytasks.R
 import com.example.dailytasks.model.Task
 import java.time.LocalDate
@@ -37,7 +41,7 @@ fun EditTaskDialog(
     var dueDate by remember(task.id) {
         mutableStateOf(task.dueDate)
     }
-
+// Edit dialog
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -45,6 +49,7 @@ fun EditTaskDialog(
         },
         text = {
             Column {
+                // Title field
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
@@ -52,7 +57,7 @@ fun EditTaskDialog(
                         (stringResource(R.string.title))
                     }
                 )
-
+                // Description field
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -61,9 +66,17 @@ fun EditTaskDialog(
                     }
                 )
 
-                // TODO: due date picker
+                Spacer(modifier = Modifier.height(12.dp))
+
+                DueDateField(
+                    dueDate = dueDate,
+                    onDateSelected = {
+                        dueDate = it
+                    }
+                )
             }
         },
+        // Save edits to the task
         confirmButton = {
             Button(
                 onClick = {
@@ -78,6 +91,7 @@ fun EditTaskDialog(
                 Text(stringResource(R.string.save))
             }
         },
+        // Cancel edit
         dismissButton = {
             Button(onClick = onDismiss) {
                 Text(stringResource(R.string.cancel))

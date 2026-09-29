@@ -21,6 +21,7 @@ class TaskViewModel(
     private val settingsDataStore =
         SettingsData(application.applicationContext)
 
+    // Checks if dark mode is active
     val isDarkMode: StateFlow<Boolean> =
         settingsDataStore.isDarkMode.stateIn(
             scope = viewModelScope,
@@ -28,16 +29,14 @@ class TaskViewModel(
             initialValue = false
         )
 
+    // Sets dark mode to be enabled
     fun setDarkModeEnabled(enabled: Boolean) {
         viewModelScope.launch {
             settingsDataStore.setDarkMode(enabled)
         }
     }
 
-    fun toggleDarkMode() {
-        setDarkModeEnabled(!isDarkMode.value)
-    }
-
+    // Initial task for the task list to introduce the user
     private val _tasks = MutableStateFlow(
         listOf(
             Task(

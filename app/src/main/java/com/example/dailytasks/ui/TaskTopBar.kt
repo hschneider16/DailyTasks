@@ -18,6 +18,7 @@ import com.example.dailytasks.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// Top bar with hamburger menu & title
 fun TaskTopBar(
     title: Int,
     onMenuClick: () -> Unit
@@ -44,23 +45,5 @@ fun TaskTopBar(
             titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
-    )
-}
-
-@Composable
-fun AddTaskButton(
-    onClick: () -> Unit
-) {
-    ExtendedFloatingActionButton(
-        onClick = onClick,
-        icon = {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null
-            )
-        },
-        text = {
-            Text(stringResource(R.string.add_task))
-        }
     )
 }

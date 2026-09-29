@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
@@ -49,28 +49,22 @@ fun HelpScreen(
             answer = stringResource(R.string.a3)
         )
     )
-
-    Column(
+// Scrollable column in the event the list of help items becomes too long
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 8.dp, vertical = 6.dp)
     ) {
+        // Displays each help item
+        itemsIndexed(helpItems) { index, item ->
+            HelpSection(
+                question = item.question,
+                answer = item.answer
+            )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 8.dp, vertical = 6.dp)
-        ) {
-            helpItems.forEachIndexed { index, item ->
-                HelpSection(
-                    question = item.question,
-                    answer = item.answer
-                )
-
-                if (index < helpItems.lastIndex) {
-                    HelpDivider()
-                }
+            if (index < helpItems.lastIndex) {
+                HelpDivider()
             }
         }
     }
@@ -80,7 +74,6 @@ private data class HelpItem(
     val question: String,
     val answer: String
 )
-
 
 @Composable
 private fun HelpSection(
@@ -117,12 +110,13 @@ private fun HelpSection(
                 } else {
                     "Expand answer"
                 },
+                // Rotate to show if open or closed
                 modifier = Modifier.rotate(
                     if (expanded) 90f else 0f
                 )
             )
         }
-
+        // Animates the question expansion
         AnimatedVisibility(
             visible = expanded
         ) {
@@ -146,6 +140,6 @@ private fun HelpDivider() {
             horizontal = 12.dp,
             vertical = 4.dp
         ),
-        color = MaterialTheme.colorScheme.surfaceVariant
+        color = MaterialTheme.colorScheme.outlineVariant
     )
 }

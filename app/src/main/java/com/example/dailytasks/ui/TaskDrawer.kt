@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Home
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.dailytasks.R
 
 @Composable
+// This is the general app navigation drawer
 fun TaskDrawer(
     onCloseClick: () -> Unit,
     onSettingsClick: () -> Unit,
@@ -45,15 +48,16 @@ fun TaskDrawer(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Close menu button
                 IconButton(
                     onClick = onCloseClick
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.close_desc)
                     )
                 }
-
+                // Top text
                 Text(
                     text = stringResource(R.string.menu),
                     style = MaterialTheme.typography.headlineSmall,
@@ -64,7 +68,7 @@ fun TaskDrawer(
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 12.dp)
             )
-
+            // Button that goes to the task screen
             NavItem(
                 icon = {
                     Icon(
@@ -75,7 +79,7 @@ fun TaskDrawer(
                 label = stringResource(R.string.tasks),
                 onClick = onTaskClick
             )
-
+            // Button that goes to settings
             NavItem(
                 icon = {
                     Icon(
@@ -86,11 +90,11 @@ fun TaskDrawer(
                 label = stringResource(R.string.settings),
                 onClick = onSettingsClick
             )
-
+            // Button that goes to help screen
             NavItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Default.Help,
+                        imageVector = Icons.AutoMirrored.Filled.Help,
                         contentDescription = null
                     )
                 },
@@ -102,6 +106,7 @@ fun TaskDrawer(
 }
 
 @Composable
+// UI element for nav items
 private fun NavItem(
     icon: @Composable () -> Unit,
     label: String,

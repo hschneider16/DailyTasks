@@ -42,6 +42,7 @@ fun SettingsScreen(
     }
 
 @Composable
+// Creates the UI for the dark mode setting's toggle & toggle logic
 fun DarkModeSetting(
     isDarkMode: Boolean,
     onDarkModeChanged: (Boolean) -> Unit
@@ -55,11 +56,13 @@ fun DarkModeSetting(
         Column(
             modifier = Modifier.weight(1f)
         ) {
+            // Setting title
             Text(
                 text = stringResource(R.string.darkmode),
                 fontWeight = FontWeight.Bold
             )
 
+            // Setting description
             Text(
                 text = stringResource(R.string.darkmode_desc)
             )
@@ -69,6 +72,7 @@ fun DarkModeSetting(
             modifier = Modifier.width(16.dp)
         )
 
+        // The actual toggle switch
         Switch(
             checked = isDarkMode,
             onCheckedChange = onDarkModeChanged,

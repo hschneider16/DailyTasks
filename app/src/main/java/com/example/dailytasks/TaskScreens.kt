@@ -39,6 +39,7 @@ enum class TaskScreens (@StringRes val title: Int) {
     SettingScreen(title = R.string.settings),
 }
 
+// Main composable for the Daily Tasks app
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyTasksApp(
@@ -59,27 +60,32 @@ fun DailyTasksApp(
 
     val backStackEntry by navController.currentBackStackEntryAsState()
 
+    // Gets the route of the current screen
     val currentRoute: String =
         backStackEntry?.destination?.route
             ?: TaskScreens.Start.name
 
+    // Converts the current route name into a TaskScreens enum value
     val currentScreen: TaskScreens =
         TaskScreens.entries.firstOrNull { screen ->
             screen.name == currentRoute
         } ?: TaskScreens.Start
 
+    // Closes the navigation drawer
     fun closeDrawer() {
         scope.launch {
             drawerState.close()
         }
     }
 
+    // Opens the navigation drawer
     fun openDrawer() {
         scope.launch {
             drawerState.open()
         }
     }
 
+    // If the drawer is open, pressing the system Back button closes it
     BackHandler(
         enabled = drawerState.isOpen
     ) {
@@ -90,18 +96,22 @@ fun DailyTasksApp(
         drawerState = drawerState,
         drawerContent = {
             TaskDrawer(
+                // Close the drawer when the close button is clicked
                 onCloseClick = ::closeDrawer,
 
+                // Navigate to the settings screen
                 onSettingsClick = {
                     closeDrawer()
                     navController.navigate(TaskScreens.SettingScreen.name)
                 },
 
+                // Navigate to the help screen
                 onHelpClick = {
                     closeDrawer()
                     navController.navigate(TaskScreens.HelpScreen.name)
                 },
 
+                // Navigate to the task (main) screen
                 onTaskClick = {
                     closeDrawer()
                     navController.navigate(TaskScreens.Start.name)
@@ -125,11 +135,13 @@ fun DailyTasksApp(
             }
         ) { innerPadding ->
 
+            // The app's navigation graph
             NavHost(
                 navController = navController,
                 startDestination = TaskScreens.Start.name,
                 modifier = Modifier.padding(innerPadding)
             ) {
+                // Task list screen
                 composable(TaskScreens.Start.name) {
                     TaskList(
                         tasks = tasks,
@@ -144,6 +156,7 @@ fun DailyTasksApp(
                     )
                 }
 
+                // Help screen
                 composable(TaskScreens.HelpScreen.name) {
                     HelpScreen(
                         onBackClick = {
@@ -152,6 +165,7 @@ fun DailyTasksApp(
                     )
                 }
 
+                // Settings screen
                 composable(TaskScreens.SettingScreen.name) {
                     SettingsScreen(
                         isDarkMode = isDarkMode,
@@ -164,11 +178,15 @@ fun DailyTasksApp(
             }
         }
 
+        // Show add task dialog if button pressed
         if (showAddTaskDialog) {
             AddTaskDialog(
+                // Hide the dialog without saving
                 onDismiss = {
                     showAddTaskDialog = false
                 },
+
+                // Add the new task
                 onSave = { title, description, dueDate ->
                     viewModel.addTask(
                         title = title,
@@ -176,6 +194,7 @@ fun DailyTasksApp(
                         dueDate = dueDate
                     )
 
+                    // Hide the dialog after saving
                     showAddTaskDialog = false
                 }
             )
@@ -184,9 +203,11 @@ fun DailyTasksApp(
         editingTask?.let { task ->
             EditTaskDialog(
                 task = task,
+                // Cancel selection and close
                 onDismiss = {
                     editingTask = null
                 },
+                // Edit selection and save
                 onSave = { title, description, dueDate ->
                     viewModel.editTask(
                         taskId = task.id,
@@ -203,9 +224,11 @@ fun DailyTasksApp(
         // Delete task dialog
         deletingTask?.let { task ->
             DeleteTaskDialog(
+                // Cancel selection and close
                 onDismiss = {
                     deletingTask = null
                 },
+                // Delete selected task
                 onDelete = {
                     viewModel.deleteTask(
                         taskId = task.id,

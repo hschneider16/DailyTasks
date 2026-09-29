@@ -2,6 +2,7 @@
     <string name="app_name">Daily Tasks</string>
     <string name="title_name">Daily Task Tracker</string>
     <string name="title">Title</string>
+    <string name="due_date">Due Date</string>
     <string name="desc">Description</string>
     <string name="menu">Menu</string>
     <string name="back">Back</string>
@@ -20,6 +21,7 @@
     <string name="help">Help</string>
     <string name="tasks">Tasks</string>
     <string name="save">Save</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="darkmode">Dark mode</string>
     <string name="darkmode_desc">Change the light theme to a darker, easier-on-the-eyes one.</string>

@@ -8,11 +8,13 @@ import androidx.compose.ui.res.stringResource
 import com.example.dailytasks.R
 
 // This is the UI element that pops up when the delete task button is clicked
+// It exists to prompt for confirmation
 @Composable
 fun DeleteTaskDialog(
     onDelete: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    // Delete dialog
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -25,6 +27,7 @@ fun DeleteTaskDialog(
                 )
             )
         },
+        // Cancel deletion
         dismissButton = {
             Button(
                 onClick = onDismiss
@@ -32,6 +35,7 @@ fun DeleteTaskDialog(
                 Text(stringResource(R.string.cancel))
             }
         },
+        // Confirm deletion
         confirmButton = {
             Button(
                 onClick = {
