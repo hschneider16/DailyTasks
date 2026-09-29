@@ -1,25 +1,43 @@
 package com.example.dailytasks.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.dailytasks.data.SettingsData
 import com.example.dailytasks.model.Task
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class TaskViewModel : ViewModel() {
+class TaskViewModel(
+    application: Application
+) : AndroidViewModel(application) {
 
     // Dark mode setting function
-    val _isDarkMode = MutableStateFlow(false)
-    val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
+    private val settingsDataStore =
+        SettingsData(application.applicationContext)
+
+    val isDarkMode: StateFlow<Boolean> =
+        settingsDataStore.isDarkMode.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false
+        )
 
     fun setDarkModeEnabled(enabled: Boolean) {
-        _isDarkMode.value = enabled
+        viewModelScope.launch {
+            settingsDataStore.setDarkMode(enabled)
+        }
     }
 
     fun toggleDarkMode() {
-        _isDarkMode.value = !_isDarkMode.value
+        setDarkModeEnabled(!isDarkMode.value)
     }
+
     private val _tasks = MutableStateFlow(
         listOf(
             Task(
@@ -61,8 +79,9 @@ class TaskViewModel : ViewModel() {
         description: String,
         dueDate: LocalDate
     ) {
+        val nextId = (_tasks.value.maxOfOrNull { it.id } ?: 0L) + 1L
         val newTask = Task(
-            id = System.currentTimeMillis(),
+            id = nextId,
             title = title,
             description = description,
             dueDate = dueDate
@@ -94,7 +113,7 @@ class TaskViewModel : ViewModel() {
     // Deletes tasks
     fun deleteTask(taskId: Long) {
         _tasks.value = _tasks.value.filterNot { it.id == taskId }
-        // TODO: add function
     }
 }
+
 

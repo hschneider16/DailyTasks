@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,20 +13,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Help
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dailytasks.R
 import com.example.dailytasks.model.Task
 import java.time.LocalDate
@@ -49,6 +46,8 @@ fun TaskList(
     tasks: List<Task>,
     onTaskClick: (Long) -> Unit,
     onMarkDoneClick: (Long) -> Unit,
+    onEditClick: (Task) -> Unit,
+    onDeleteClick: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Scrollable column for viewing tasks
@@ -69,8 +68,13 @@ fun TaskList(
                 // Mark as completed
                 onMarkDoneClick = {
                     onMarkDoneClick(task.id)
+                },
+                onEditClick = {
+                    onEditClick(task)
+                },
+                onDeleteClick = {
+                    onDeleteClick(task)
                 }
-                //TODO: Edit functionality
             )
         }
     }
@@ -80,7 +84,9 @@ fun TaskList(
 fun TaskCard(
     task: Task,
     onTaskClick: () -> Unit,
-    onMarkDoneClick: () -> Unit
+    onMarkDoneClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -133,23 +139,34 @@ fun TaskCard(
         Spacer(modifier = Modifier.height(10.dp))
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 4.dp)
         ) {
+            // The delete button
+            Button(
+                onClick = onDeleteClick,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DeleteForever,
+                    contentDescription = "Delete task"
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
             // The edit button
             Button(
-                onClick = {
-                    // TODO: add edit function
-                }
+                onClick = onEditClick
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = null
+                    contentDescription = "Edit task"
                 )
-
                 Spacer(modifier = Modifier.width(4.dp))
 
-                Text(stringResource(R.string.edit_task))
+                Text(stringResource(R.string.edit))
             }
+            Spacer(modifier = Modifier.width(8.dp))
             // The mark as done button
             Button(
                 onClick = onMarkDoneClick
@@ -171,78 +188,4 @@ fun TaskCard(
             }
         }
     }
-}
-
-@Composable
-fun AddTaskDialog(
-    onDismiss: () -> Unit,
-    onSave: (
-        title: String,
-        description: String,
-        dueDate: LocalDate
-    ) -> Unit
-) {
-    var title by remember {
-        mutableStateOf("")
-    }
-
-    var description by remember {
-        mutableStateOf("")
-    }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(stringResource(R.string.add_task))
-        },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(stringResource(R.string.title))
-                    },
-                    singleLine = true
-                )
-
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
-
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(stringResource(R.string.desc))
-                    },
-                    minLines = 3
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    if (title.isNotBlank()) {
-                        onSave(
-                            title.trim(),
-                            description.trim(),
-                            LocalDate.now()
-                        )
-                    }
-                }
-            ) {
-                Text(stringResource(R.string.save))
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = onDismiss
-            ) {
-                Text(stringResource(R.string.cancel))
-            }
-        }
-    )
 }

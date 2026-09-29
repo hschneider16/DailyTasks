@@ -79,23 +79,23 @@ fun TaskDrawer(
             NavItem(
                 icon = {
                     Icon(
-                        imageVector = Icons.Default.Help,
-                        contentDescription = null
-                    )
-                },
-                label = stringResource(R.string.help),
-                onClick = onHelpClick
-            )
-
-            NavItem(
-                icon = {
-                    Icon(
                         imageVector = Icons.Default.Settings,
                         contentDescription = null
                     )
                 },
                 label = stringResource(R.string.settings),
                 onClick = onSettingsClick
+            )
+
+            NavItem(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Help,
+                        contentDescription = null
+                    )
+                },
+                label = stringResource(R.string.help),
+                onClick = onHelpClick
             )
         }
     }

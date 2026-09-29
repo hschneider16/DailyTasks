@@ -37,6 +37,7 @@ android {
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation(libs.androidx.activity.compose)
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
