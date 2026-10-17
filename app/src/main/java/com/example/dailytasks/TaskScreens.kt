@@ -48,9 +48,9 @@ fun DailyTasksApp(
     val tasks: List<Task> by viewModel.tasks.collectAsStateWithLifecycle()
     val expandedTaskIds by viewModel.expandedTaskIds.collectAsStateWithLifecycle()
     val isDarkMode: Boolean by viewModel.isDarkMode.collectAsStateWithLifecycle()
-    val hideCompletedTasks by viewModel.hideCompletedTasks
-        .collectAsStateWithLifecycle()
+    val hideCompletedTasks by viewModel.hideCompletedTasks.collectAsStateWithLifecycle()
 
+    // Complete tasks hidden, if the setting is enabled
     val visibleTasks = if (hideCompletedTasks) {
         tasks.filterNot { it.complete }
     } else {
@@ -136,12 +136,13 @@ fun DailyTasksApp(
                 )
             },
             floatingActionButton = {
-                AddTaskButton(
-                    onClick = {
-                        showAddTaskDialog = true
-                    }
-                )
+                if (currentRoute == TaskScreens.Start.name) {
+                    AddTaskButton(
+                        onClick = { showAddTaskDialog = true }
+                    )
+                }
             }
+
         ) { innerPadding ->
 
             // The app's navigation graph

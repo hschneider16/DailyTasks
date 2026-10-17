@@ -1,12 +1,13 @@
 package com.example.dailytasks.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,36 +17,30 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dailytasks.R
 import com.example.dailytasks.model.Task
+import nl.dionsegijn.konfetti.compose.KonfettiView
+import nl.dionsegijn.konfetti.compose.rememberKonfettiState
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun TaskList(
@@ -57,36 +52,59 @@ fun TaskList(
     onDeleteClick: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Scrollable column for viewing tasks
-    LazyColumn(
-        modifier = modifier.padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(
-            items = tasks,
-            key = { task -> task.id }
-        ) { task ->
-            TaskCard(
-                task = task,
-                isExpanded = task.id in expandedTaskIds,
-                // Toggle expansion
-                onTaskClick = {
-                    onTaskClick(task.id)
-                },
-                // Mark as completed
-                onMarkDoneClick = {
-                    onMarkDoneClick(task.id)
-                },
-                // Edit task
-                onEditClick = {
-                    onEditClick(task)
-                },
-                // Delete task
-                onDeleteClick = {
-                    onDeleteClick(task)
-                }
-            )
+    // Confetti state for when a task is marked complete :)
+    val konfettiState = rememberKonfettiState()
+
+
+    val party = Party(
+        position = Position.Relative(0.5, 0.3),
+        emitter = Emitter(duration = 200, TimeUnit.MILLISECONDS).max(100)
+    )
+
+    Box(modifier = modifier.fillMaxSize()) {
+        // Scrollable column for viewing tasks
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                items = tasks,
+                key = { task -> task.id }
+            ) { task ->
+                TaskCard(
+                    task = task,
+                    isExpanded = task.id in expandedTaskIds,
+                    // Toggle expansion
+                    onTaskClick = {
+                        onTaskClick(task.id)
+                    },
+                    // Mark as completed
+                    onMarkDoneClick = {
+                        if (!task.complete) {
+                            onMarkDoneClick(task.id)
+                            // Show confetti :)
+                            konfettiState.start(party)
+                        } else {
+                            onMarkDoneClick(task.id)
+                        }
+                    },
+                    // Edit task
+                    onEditClick = {
+                        onEditClick(task)
+                    },
+                    // Delete task
+                    onDeleteClick = {
+                        onDeleteClick(task)
+                    }
+                )
+            }
         }
+        KonfettiView(
+            state = konfettiState,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 
@@ -201,7 +219,7 @@ fun TaskCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.DeleteForever,
-                    contentDescription = "Delete task"
+                    contentDescription = stringResource(R.string.delete_task)
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -211,7 +229,7 @@ fun TaskCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit task"
+                    contentDescription = stringResource(R.string.edit_task)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
 

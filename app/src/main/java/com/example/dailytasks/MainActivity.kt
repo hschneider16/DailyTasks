@@ -16,7 +16,9 @@ import com.example.dailytasks.ui.theme.DailyTasksTheme
 * mark them as done, edit them, or delete them.
 * Programmed by Hunter Schneider
 * SDEV 264
-* Prof. Michael Feagans  */
+* Prof. Michael Feagans
+* Thank you to Daniel Martinus for the Konfetti library:
+* https://github.com/DanielMartinus/Konfetti */
 class MainActivity : ComponentActivity() {
 
     private val taskViewModel: TaskViewModel by viewModels()

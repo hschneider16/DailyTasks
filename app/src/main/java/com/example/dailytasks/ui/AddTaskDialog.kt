@@ -91,7 +91,7 @@ fun AddTaskDialog(
                         onSave(
                             title.trim(),
                             description.trim(),
-                            LocalDate.now()
+                            dueDate
                         )
                     }
                 }

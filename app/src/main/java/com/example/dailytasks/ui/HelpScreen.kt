@@ -47,6 +47,18 @@ fun HelpScreen(
         HelpItem(
             question = stringResource(R.string.q3),
             answer = stringResource(R.string.a3)
+        ),
+        HelpItem(
+            question = stringResource(R.string.q4),
+            answer = stringResource(R.string.a4)
+        ),
+        HelpItem(
+            question = stringResource(R.string.q5),
+            answer = stringResource(R.string.a5)
+        ),
+        HelpItem(
+            question = stringResource(R.string.q6),
+            answer = stringResource(R.string.a6)
         )
     )
 // Scrollable column in the event the list of help items becomes too long

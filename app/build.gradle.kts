@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    val roomVersion = "2.8.5"
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation(libs.androidx.activity.compose)
@@ -50,9 +51,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.protolite.well.known.types)
-    implementation("androidx.room:room-runtime:2.8.5")
-    implementation("androidx.room:room-ktx:2.8.5")
-    ksp("androidx.room:room-compiler:2.8.5")
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("nl.dionsegijn:konfetti-compose:2.1.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)

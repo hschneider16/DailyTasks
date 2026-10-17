@@ -136,6 +136,6 @@ private fun SettingDivider() {
             horizontal = 12.dp,
             vertical = 12.dp
         ),
-        color = MaterialTheme.colorScheme.surfaceDim
+        color = MaterialTheme.colorScheme.outlineVariant
     )
 }
