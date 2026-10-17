@@ -16,6 +16,7 @@ val Context.settingsDataStore by preferencesDataStore(
 object SettingsKeys {
     val DARK_MODE = booleanPreferencesKey("dark_mode")
     val THEME = stringPreferencesKey("theme")
+    val HIDE_COMPLETED = booleanPreferencesKey("hide_completed")
 }
 
 class SettingsData(
@@ -32,4 +33,14 @@ class SettingsData(
         }
     }
 
+    val isHideCompletedOn: Flow<Boolean> =
+        context.settingsDataStore.data.map { preferences ->
+            preferences[SettingsKeys.HIDE_COMPLETED] ?: false
+        }
+
+    suspend fun setHideCompleted(enabled: Boolean) {
+        context.settingsDataStore.edit { preferences ->
+            preferences[SettingsKeys.HIDE_COMPLETED] = enabled
+        }
+    }
 }

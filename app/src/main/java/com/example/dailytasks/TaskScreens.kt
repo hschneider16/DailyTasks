@@ -46,7 +46,16 @@ fun DailyTasksApp(
     viewModel: TaskViewModel
 ) {
     val tasks: List<Task> by viewModel.tasks.collectAsStateWithLifecycle()
+    val expandedTaskIds by viewModel.expandedTaskIds.collectAsStateWithLifecycle()
     val isDarkMode: Boolean by viewModel.isDarkMode.collectAsStateWithLifecycle()
+    val hideCompletedTasks by viewModel.hideCompletedTasks
+        .collectAsStateWithLifecycle()
+
+    val visibleTasks = if (hideCompletedTasks) {
+        tasks.filterNot { it.complete }
+    } else {
+        tasks
+    }
 
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -144,7 +153,8 @@ fun DailyTasksApp(
                 // Task list screen
                 composable(TaskScreens.Start.name) {
                     TaskList(
-                        tasks = tasks,
+                        tasks = visibleTasks,
+                        expandedTaskIds = expandedTaskIds,
                         onTaskClick = viewModel::toggleTaskExpanded,
                         onMarkDoneClick = viewModel::markTaskAsDone,
                         onEditClick = { task ->
@@ -170,6 +180,8 @@ fun DailyTasksApp(
                     SettingsScreen(
                         isDarkMode = isDarkMode,
                         onDarkModeChanged = viewModel::setDarkModeEnabled,
+                        isHideCompletedOn = hideCompletedTasks,
+                        onHideCompletedChanged = viewModel::setHideCompletedTasks,
                         onBackClick = {
                             navController.popBackStack()
                         }

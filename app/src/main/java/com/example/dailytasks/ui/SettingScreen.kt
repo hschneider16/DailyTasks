@@ -25,7 +25,9 @@ import com.example.dailytasks.R
 fun SettingsScreen(
     isDarkMode: Boolean,
     onDarkModeChanged: (Boolean) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    isHideCompletedOn: Boolean,
+    onHideCompletedChanged: (Boolean) -> Unit
 ) {
     // Setting menu UI
         Column(
@@ -38,6 +40,10 @@ fun SettingsScreen(
                 onDarkModeChanged = onDarkModeChanged
             )
             SettingDivider()
+            HideCompleteSetting(
+                hideCompletedTasks = isHideCompletedOn,
+                onHideCompletedChanged = onHideCompletedChanged
+            )
         }
     }
 
@@ -76,6 +82,47 @@ fun DarkModeSetting(
         Switch(
             checked = isDarkMode,
             onCheckedChange = onDarkModeChanged,
+            modifier = Modifier,
+            thumbContent = null
+        )
+    }
+}
+
+@Composable
+// Creates the UI for the show completed tasks on/off setting's toggle & toggle logic
+fun HideCompleteSetting(
+    hideCompletedTasks: Boolean,
+    onHideCompletedChanged: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            // Setting title
+            Text(
+                text = stringResource(R.string.hidecomplete),
+                fontWeight = FontWeight.Bold
+            )
+
+            // Setting description
+            Text(
+                text = stringResource(R.string.hidecomplete_desc)
+            )
+        }
+
+        Spacer(
+            modifier = Modifier.width(16.dp)
+        )
+
+        // The actual toggle switch
+        Switch(
+            checked = hideCompletedTasks,
+            onCheckedChange = onHideCompletedChanged,
             modifier = Modifier,
             thumbContent = null
         )

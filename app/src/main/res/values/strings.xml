@@ -26,6 +26,9 @@
     <string name="darkmode">Dark mode</string>
     <string name="darkmode_desc">Change the light theme to a darker, easier-on-the-eyes one.</string>
     <string name="darkmode_switch">Toggle dark mode</string>
+    <string name="hidecomplete">Hide completed tasks</string>
+    <string name="hidecomplete_desc">Off by default. Switch on to hide any tasks you\'ve marked as complete.</string>
+    <string name="hidecomplete_switch">Toggle completed tasks visibility</string>
     <string name="q1">What is this app?</string>
     <string name="a1">This app is a daily task tracker or to-do list, and you can use it like you would with a regular, physical to-do list!</string>
     <string name="q2">How do I add a task?</string>

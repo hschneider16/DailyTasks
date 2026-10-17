@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +50,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun TaskList(
     tasks: List<Task>,
+    expandedTaskIds: Set<Long>,
     onTaskClick: (Long) -> Unit,
     onMarkDoneClick: (Long) -> Unit,
     onEditClick: (Task) -> Unit,
@@ -65,6 +68,7 @@ fun TaskList(
         ) { task ->
             TaskCard(
                 task = task,
+                isExpanded = task.id in expandedTaskIds,
                 // Toggle expansion
                 onTaskClick = {
                     onTaskClick(task.id)
@@ -90,10 +94,11 @@ fun TaskList(
 // UI element for what each task on the list should look like
 fun TaskCard(
     task: Task,
+    isExpanded: Boolean,
     onTaskClick: () -> Unit,
     onMarkDoneClick: () -> Unit,
     onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
 ) {
     val isOverdue =
         !task.complete && LocalDate.now().isAfter(task.dueDate)
@@ -104,22 +109,42 @@ fun TaskCard(
         } else {
             MaterialTheme.colorScheme.outlineVariant
         }
+
+    // Logic for checking if task is complete, and changing the task color to be duller if true
+    val isComplete =
+        task.complete
+
+    val isCompleteColor =
+        if (isComplete) {
+            MaterialTheme.colorScheme.outlineVariant
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
+
+    val isCompleteTextColor =
+        if (isComplete) {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(isCompleteColor)
             .padding(12.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.Top,
         ) {
             // Name of task
             Text(
                 text = task.title,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = (isCompleteTextColor)
             )
             // Task due date
             Text(
@@ -145,12 +170,13 @@ fun TaskCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onTaskClick),
-                maxLines = if (task.isExpanded) Int.MAX_VALUE else 2,
+                maxLines = if (isExpanded) Int.MAX_VALUE else 2,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = (isCompleteTextColor)
             )
 // Function to cut off long text when not expanded
-            if (!task.isExpanded && task.description.length > 90) {
+            if (!isExpanded && task.description.length > 90) {
                 Text(
                     text = stringResource(R.string.more),
                     modifier = Modifier

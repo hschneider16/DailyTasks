@@ -4,12 +4,18 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dailytasks.data.SettingsData
+import com.example.dailytasks.data.TaskDatabase
+import com.example.dailytasks.data.TaskEntity
+import com.example.dailytasks.data.toEntity
+import com.example.dailytasks.data.toTask
 import com.example.dailytasks.model.Task
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -36,39 +42,50 @@ class TaskViewModel(
         }
     }
 
-    // Initial task for the task list to introduce the user
-    private val _tasks = MutableStateFlow(
-        listOf(
-            Task(
-                id = 1,
-                title = "Introduction Task",
-                description = "Welcome to the Daily Task Tracker! The plus button in the bottom right hand corner can add tasks to a list that will show here. To change your settings, click on the three lines in the top left corner. A help page is also available if you need guidance on what to do. Have fun!",
-                dueDate = LocalDate.now()
-            )
+    // Should complete tasks appear in the list?
+    val hideCompletedTasks: StateFlow<Boolean> =
+        settingsDataStore.isHideCompletedOn.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false
         )
-    )
 
-    val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()
+    // Save preference
+    fun setHideCompletedTasks(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsDataStore.setHideCompleted(enabled)
+        }
+    }
+
+    private val taskDao = TaskDatabase
+        .getInstance(application)
+        .taskDao()
+
+    val tasks: StateFlow<List<Task>> =
+        taskDao.observeTasks()
+            .map { rows -> rows.map { it.toTask() } }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptyList()
+            )
+
+    private val _expandedTaskIds = MutableStateFlow<Set<Long>>(emptySet())
+    val expandedTaskIds: StateFlow<Set<Long>> = _expandedTaskIds.asStateFlow()
 
     // Expand long task descriptions that are otherwise cut off
     fun toggleTaskExpanded(taskId: Long) {
-        _tasks.value = _tasks.value.map { task ->
-            if (task.id == taskId) {
-                task.copy(isExpanded = !task.isExpanded)
-            } else {
-                task
-            }
+        _expandedTaskIds.update { ids ->
+            if (taskId in ids) ids - taskId else ids + taskId
         }
     }
 
     // Mark tasks as completed
     fun markTaskAsDone(taskId: Long) {
-        _tasks.value = _tasks.value.map { task ->
-            if (task.id == taskId) {
-                task.copy(complete = !task.complete)
-            } else {
-                task
-            }
+        viewModelScope.launch {
+            val existing = tasks.value.firstOrNull { it.id == taskId } ?: return@launch
+            taskDao.update(existing.copy(complete=!existing.complete).toEntity())
+
         }
     }
 
@@ -78,15 +95,16 @@ class TaskViewModel(
         description: String,
         dueDate: LocalDate
     ) {
-        val nextId = (_tasks.value.maxOfOrNull { it.id } ?: 0L) + 1L
-        val newTask = Task(
-            id = nextId,
-            title = title,
-            description = description,
-            dueDate = dueDate
-        )
-
-        _tasks.value = _tasks.value + newTask
+        viewModelScope.launch {
+            taskDao.insert(
+                TaskEntity(
+                    title = title,
+                    description = description,
+                    dueDateEpochDay = dueDate.toEpochDay(),
+                    complete = false
+                )
+            )
+        }
     }
 
     // Edits tasks
@@ -96,22 +114,24 @@ class TaskViewModel(
         description: String,
         dueDate: LocalDate
     ) {
-        _tasks.value = _tasks.value.map { task ->
-            if (task.id == taskId) {
-                task.copy(
+        viewModelScope.launch {
+            val existing = tasks.value.firstOrNull { it.id == taskId } ?: return@launch
+            taskDao.update(
+                existing.copy(
                     title = title,
                     description = description,
-                    dueDate = dueDate
-                )
-            } else {
-                task
-            }
+                    dueDate = dueDate,
+                ).toEntity()
+            )
         }
     }
 
     // Deletes tasks
     fun deleteTask(taskId: Long) {
-        _tasks.value = _tasks.value.filterNot { it.id == taskId }
+        viewModelScope.launch {
+            val existing = tasks.value.firstOrNull { it.id == taskId } ?: return@launch
+            taskDao.delete(existing.toEntity())
+        }
     }
 }
 
